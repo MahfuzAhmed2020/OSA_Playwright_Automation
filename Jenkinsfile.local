@@ -17,6 +17,10 @@ pipeline {
     }
 
 
+    triggers {
+        pollSCM('* * * * *')
+    }
+
     environment {
         CI = 'true'
         APP_BASE_URL = "${params.APP_BASE_URL ?: 'http://localhost:8087'}"
@@ -26,6 +30,19 @@ pipeline {
     }
 
     stages {
+        stage('Watch application master') {
+            steps {
+                dir('application-source') {
+                    // Configure only this checkout; application commits include long Android build paths.
+                    bat 'if not exist .git git init'
+                    bat 'git config core.longpaths true'
+                    git branch: 'master', poll: true, changelog: true,
+                        url: 'https://github.com/MahfuzAhmed2020/Mobile_User_V_1.8.git'
+                    bat 'git rev-parse HEAD > application-revision.txt'
+                }
+            }
+        }
+
         stage('Copy current automation') {
             steps {
                 powershell '''
@@ -92,7 +109,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'target/surefire-reports/**/*,target/screenshots/**/*',
+            archiveArtifacts artifacts: 'target/surefire-reports/**/*,target/screenshots/**/*,application-source/application-revision.txt',
                 allowEmptyArchive: true
         }
     }

@@ -1,3 +1,9 @@
+# To run JENKINS http://localhost:8080/job/OSA-Practice-Automation/ 
+
+$env:JENKINS_HOME = "C:\Users\mahfu\.jenkins"
+& "C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin\java.exe" -jar "C:\Users\mahfu\Desktop\Jenkins_All\jenkins.war" --httpPort=8080 --httpListenAddress=127.0.0.1
+
+
 # OSA Playwright Automation (Java)
 
 Login automation for http://localhost:8087/login using Java, Playwright, TestNG, Cucumber, and the Page Object Model (POM).

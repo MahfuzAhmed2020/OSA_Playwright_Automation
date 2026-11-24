@@ -7,8 +7,15 @@ Its inline pipeline is saved in `Jenkinsfile.local`. It uses the built-in Window
 node and the installed Java 21/Maven paths, copies the current local automation
 project into a separate Jenkins workspace, and runs the suite there. Use
 **Build with Parameters** (or **Build Now** on the initial run) to run it again.
-This local job does not poll GitHub. The root `Jenkinsfile` below is the SCM-based
-version to use after committing and pushing the project changes.
+This local job polls the application's GitHub `master` branch every minute.
+Application pushes trigger a run after Jenkins detects a new revision. The first
+run establishes the baseline. Jenkins and the Windows machine must stay running.
+The triggering application revision is archived as `application-revision.txt`.
+The root `Jenkinsfile` below is the automation-SCM-based version.
+
+The watched application checkout does not restart the Spring Boot server. Tests
+still target the running `APP_BASE_URL`; deploy the application revision first
+when you need the results to validate that specific revision.
 
 The root `Jenkinsfile` checks out this automation repository, compiles it, installs
 Playwright Firefox and WebKit, checks the running application's registration page,
@@ -37,8 +44,8 @@ parallel. Results and artifacts appear on the Jenkins build page.
    **Script Path** to `Jenkinsfile`. Add a Jenkins Git credential if the repository
    is private. Do not place tokens or private keys in the repository.
 8. Click **Build Now** once. Subsequent automation commits are detected by SCM
-   polling approximately every five minutes. Application repository commits alone
-   do not trigger this job.
+   polling approximately every five minutes for the SCM-based root `Jenkinsfile`.
+   The configured local job instead watches application commits every minute.
 
 ## Running and viewing results
 
